@@ -30,7 +30,7 @@ import (
 
 const (
 	EventIndexType   = 6
-	SleepInterval    = 10 // in seconds
+	SleepInterval    = 3 // in seconds
 	SyncBlockPeriod  = 10
 	LogMakeTopic     = "0xfc37f2ff950f95913eb7182357ba3c14df60ef354bc7d6ab1ba2815f249fffe6"
 	LogCancelTopic   = "0x0ac8bb53fac566d7afc05d8b4df11d7690a7b27bdc40b54e4060f9b21fb849bd"
@@ -219,17 +219,17 @@ func (s *Service) handleMakeEvent(log ethereumTypes.Log) {
 		if saleKind == FixForCollection { //针对集合的买单
 			orderType = multi.CollectionBidOrder
 		} else { //针对item的买单
-			orderType = multi.ListingOrder
+			orderType = multi.ItemBidOrder
 		}
 	} else { //卖单
-		orderType = multi.ListingType
+		orderType = multi.ListingOrder
 	}
 	newOrder := multi.Order{
 		MarketplaceId:     multi.MarketOrderBook,
 		CollectionAddress: event.Nft.CollectionAddr.String(),
 		TokenId:           event.Nft.TokenId.String(),
 		OrderID:           HexPrefix + hex.EncodeToString(event.OrderKey[:]),
-		OrderStatus:       multi.OrderStatusActive,
+		OrderStatus:       multi.OrderStatusActive,      //订单状态有效
 		EventTime:         time.Now().Unix(),            //事件时间
 		ExpireTime:        int64(event.Expiry),          //过期时间
 		CurrencyAddress:   s.cfg.ContractCfg.EthAddress, //货币地址
